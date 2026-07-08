@@ -1,0 +1,33 @@
+const https = require('https');
+
+// No "runtime: edge" config here — this runs as a standard Node.js
+// Serverless Function, which allows full control over request headers
+// (including Host), unlike the Edge Runtime's fetch() implementation.
+
+const SENDGRID_HOST = 'sendgrid.net';
+const YOUR_DOMAIN = 'url9641.heirwise.ca'; // <-- update if your branded subdomain differs
+
+module.exports = (req, res) => {
+  const options = {
+    hostname: SENDGRID_HOST,
+    port: 443,
+    path: req.url,
+    method: req.method,
+    headers: {
+      ...req.headers,
+      host: YOUR_DOMAIN, // explicitly set so SendGrid recognizes the branded domain
+    },
+  };
+
+  const proxyReq = https.request(options, (proxyRes) => {
+    res.writeHead(proxyRes.statusCode, proxyRes.headers);
+    proxyRes.pipe(res, { end: true });
+  });
+
+  req.pipe(proxyReq, { end: true });
+
+  proxyReq.on('error', (err) => {
+    res.statusCode = 502;
+    res.end('Proxy error: ' + err.message);
+  });
+};
