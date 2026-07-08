@@ -1,6 +1,0 @@
-{
-  "name": "sendgrid-link-branding-proxy",
-  "version": "1.0.0",
-  "private": true,
-  "description": "Reverse proxy for SendGrid Link Branding to enable SSL on url9641.heirwise.ca"
-}
